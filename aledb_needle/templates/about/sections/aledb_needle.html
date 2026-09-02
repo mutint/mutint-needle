@@ -1,0 +1,10 @@
+<p>The <b>mutation needle plot</b> on an experiment's Overview page: one needle per observed
+    mutation, along the axis of one of the reference's sequences, coloured by mutation type.
+    It is drawn from the mutations as they stand rather than from anything stored, so it is
+    never out of date with the tables beside it.</p>
+<p>The plot shows one sequence at a time, defaulting to the longest — the chromosome, on a
+    reference that also carries plasmids — with a picker for the others. Contigs laid end to
+    end on one axis would need offsets the reader cannot see, and every coordinate would then
+    match nothing in the mutation tables.</p>
+<p>This component contributes no page and no sidebar entry. It is a panel on a page aledb-core
+    owns, registered through <code>panel_registry</code>.</p>

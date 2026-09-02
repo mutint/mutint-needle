@@ -1,0 +1,7 @@
+# Install aledb-core dependencies first:
+#   pip install -r aledb-core/requirements.txt
+#
+# aledb-needle-specific additions (if any):
+#
+# There are none. The plot is d3 in the browser over two querysets here, and the
+# library is vendored -- see aledb_needle/static/aledb_needle/VENDOR.md.
