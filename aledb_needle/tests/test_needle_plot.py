@@ -24,6 +24,7 @@ import tempfile
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
+from aledb_common.constants import REQUEST_ALE_EXPERIMENT_ID
 from aledb_experiment.models import (
     AleExperiment, AleId, Flask, Isolate, TechnicalReplicate,
 )
@@ -352,6 +353,12 @@ class ContigPickerTestCase(TestCase):
         body = response.content.decode()
         self.assertIn("contig_picker", body)
         self.assertIn("contig=plasmid", body)
+        # The picker's links carry the parameter *name* from core's request_vocabulary
+        # context processor rather than as a literal. A panel rendered without a request
+        # gets no context processors, so that name would come out empty and every contig
+        # link would silently drop the experiment -- while `contig=plasmid` above still
+        # passed.
+        self.assertIn("?%s=%s&amp;" % (REQUEST_ALE_EXPERIMENT_ID, self.experiment.id), body)
 
 
 class NothingIsStoredTestCase(TestCase):
