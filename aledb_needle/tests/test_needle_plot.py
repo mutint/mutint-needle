@@ -62,8 +62,7 @@ class NeedlePlotTestCase(TestCase):
             ale_id=ale_row, flask_number=flask,
             defaults={"media": self.context["media"]})
         isolate = Isolate.objects.create(
-            flask=flask_row, isolate_number=1, is_population=False,
-            freezer_box=self.context["freezer_box"])
+            flask=flask_row, isolate_number=1, is_population=False)
         tech_rep = TechnicalReplicate.objects.create(isolate=isolate, tech_rep_number=1)
         return ResequencingExperiment.objects.create(
             tech_rep=tech_rep, sample_name="%d-%d-1-1" % (ale, flask))
