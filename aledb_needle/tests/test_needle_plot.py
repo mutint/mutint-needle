@@ -50,7 +50,7 @@ class NeedlePlotTestCase(TestCase):
         self.experiment = AleExperiment.objects.get(pk=created["experiment_id"])
 
         from aledb_import.gd_import import prepare_experiment_by_id
-        self.context = prepare_experiment_by_id(self.experiment.ale_id)
+        self.context = prepare_experiment_by_id(self.experiment.id)
 
         self.first = self._sample(ale=1, flask=100)
         self.second = self._sample(ale=2, flask=100)
@@ -91,7 +91,7 @@ class NeedlePlotTestCase(TestCase):
                                 genes=fields.get("ignored_genes"))
 
     def _needles(self):
-        return get_needle_plot_data(self.experiment.ale_id)
+        return get_needle_plot_data(self.experiment.id)
 
     # ---- the shape -------------------------------------------------------------------
     def test_one_needle_per_observation(self):
@@ -181,14 +181,14 @@ class NeedlePlotAxisTestCase(TestCase):
         self.experiment = ResequencingExperiment.objects.get().ale_experiment
 
     def test_the_length_comes_from_the_stored_reference(self):
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
         reference = ExperimentReference.objects.get(ale_experiment=self.experiment)
         entry = next(e for e in reference.seq_ids if e["id"] == axis["contig"])
         self.assertEqual(entry["length"], axis["length"])
         self.assertNotEqual(5000000, axis["length"])
 
     def test_it_names_the_contig_the_mutations_are_on(self):
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
         self.assertEqual(
             set(Mutation.objects.values_list("reseq_reference", flat=True)),
             {axis["contig"]})
@@ -196,15 +196,15 @@ class NeedlePlotAxisTestCase(TestCase):
 
     def test_the_data_is_scoped_to_that_contig(self):
         """Two contigs' positions on one unlabelled axis is a plot of nothing."""
-        self.assertEqual([], get_needle_plot_data(self.experiment.ale_id, contig="other"))
+        self.assertEqual([], get_needle_plot_data(self.experiment.id, contig="other"))
         self.assertTrue(get_needle_plot_data(
-            self.experiment.ale_id, contig=needle_plot_axis(self.experiment.ale_id)["contig"]))
+            self.experiment.id, contig=needle_plot_axis(self.experiment.id)["contig"]))
 
     def test_no_reference_leaves_the_length_unknown_rather_than_guessed(self):
         """The page then falls back to the data's own extent, which is still truer than a
         constant -- an experiment imported from bare .gd files has no reference at all."""
         ExperimentReference.objects.filter(ale_experiment=self.experiment).delete()
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["length"])
         self.assertIsNotNone(axis["contig"])
 
@@ -212,14 +212,14 @@ class NeedlePlotAxisTestCase(TestCase):
         """The sequences come from the reference, so they are known whether or not anything
         was found on them -- and an empty axis over the right genome is an answer."""
         ObservedMutation.objects.all().delete()
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
         self.assertIsNotNone(axis["contig"])
         self.assertEqual([0], [e["count"] for e in axis["contigs"]])
 
     def test_with_neither_a_reference_nor_mutations_there_is_nothing_to_name(self):
         ObservedMutation.objects.all().delete()
         ExperimentReference.objects.filter(ale_experiment=self.experiment).delete()
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["contig"])
         self.assertEqual([], axis["contigs"])
 
@@ -265,7 +265,7 @@ class ContigPickerTestCase(TestCase):
         self.experiment = ResequencingExperiment.objects.get().ale_experiment
 
     def test_every_sequence_is_offered_longest_first(self):
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
 
         self.assertEqual([("chrom", 1), ("plasmid", 2)],
                          [(e["id"], e["count"]) for e in axis["contigs"]])
@@ -275,7 +275,7 @@ class ContigPickerTestCase(TestCase):
         small plasmid under strong selection can carry more mutations than it, and the page
         opening on the plasmid would be a surprise about the reference dressed up as a fact
         about the data. Length is a property of the reference; a count moves with the data."""
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
 
         self.assertEqual("chrom", axis["contig"])
         self.assertEqual(2, max(e["count"] for e in axis["contigs"]),
@@ -287,27 +287,27 @@ class ContigPickerTestCase(TestCase):
         """The axis has to change with the contig, or a 4.6 Mb chromosome's scale is used to
         draw a plasmid and every mutation lands in the leftmost pixel -- which is the fault
         the hardcoded 5 Mb axis had, one level down."""
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
 
         lengths = {e["id"]: e["length"] for e in axis["contigs"]}
         self.assertEqual(len(breseq_fixture.SEQUENCE_A), lengths["chrom"])
         self.assertEqual(len(breseq_fixture.SEQUENCE_B), lengths["plasmid"])
 
     def test_choosing_a_contig_moves_the_axis_and_the_data(self):
-        axis = needle_plot_axis(self.experiment.ale_id, "plasmid")
+        axis = needle_plot_axis(self.experiment.id, "plasmid")
 
         self.assertEqual("plasmid", axis["contig"])
         self.assertEqual(len(breseq_fixture.SEQUENCE_B), axis["length"])
         self.assertEqual(
             ["40", "60"],
             sorted(point["coord"] for point in
-                   get_needle_plot_data(self.experiment.ale_id, axis["contig"])))
+                   get_needle_plot_data(self.experiment.id, axis["contig"])))
 
     def test_an_unknown_contig_falls_back_to_the_default(self):
         """A hand-typed or stale name draws the default rather than an empty plot: the
         picker is a view control, not an identity, and an empty plot of a contig that does
         not exist is indistinguishable from one that has no mutations."""
-        axis = needle_plot_axis(self.experiment.ale_id, "no-such-contig")
+        axis = needle_plot_axis(self.experiment.id, "no-such-contig")
 
         self.assertEqual("chrom", axis["contig"])
 
@@ -318,12 +318,12 @@ class ContigPickerTestCase(TestCase):
         the name is what tells those apart."""
         ObservedMutation.objects.filter(mutation__reseq_reference="plasmid").delete()
 
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
 
         self.assertEqual([("chrom", 1), ("plasmid", 0)],
                          [(e["id"], e["count"]) for e in axis["contigs"]])
         self.assertEqual(
-            [], get_needle_plot_data(self.experiment.ale_id, "plasmid"))
+            [], get_needle_plot_data(self.experiment.id, "plasmid"))
 
     def test_a_contig_the_reference_does_not_have_is_offered_last(self):
         """A mutation can name a contig the stored reference does not list. It has no length,
@@ -331,7 +331,7 @@ class ContigPickerTestCase(TestCase):
         experiment holds on no axis at all."""
         Mutation.objects.filter(reseq_reference="plasmid").update(reseq_reference="contig9")
 
-        axis = needle_plot_axis(self.experiment.ale_id)
+        axis = needle_plot_axis(self.experiment.id)
 
         self.assertEqual(["chrom", "plasmid", "contig9"],
                          [e["id"] for e in axis["contigs"]])
@@ -345,7 +345,7 @@ class ContigPickerTestCase(TestCase):
         # follow=True: `/stats` is an APPEND_SLASH redirect, as every other test of this
         # page has to do too.
         response = self.client.get(
-            "/stats?ale_experiment_id=%s&contig=plasmid" % self.experiment.ale_id,
+            "/stats?ale_experiment_id=%s&contig=plasmid" % self.experiment.id,
             follow=True)
 
         self.assertEqual(200, response.status_code)
@@ -383,7 +383,7 @@ class NothingIsStoredTestCase(TestCase):
 
     def test_a_new_observation_is_visible_with_nothing_rebuilt(self):
         """The property the removal bought: no marking, no rebuilding, nobody asked."""
-        before = len(get_needle_plot_data(self.experiment.ale_id))
+        before = len(get_needle_plot_data(self.experiment.id))
 
         mutation = Mutation.objects.filter(
             ale_experiment=self.experiment).first()
@@ -397,7 +397,7 @@ class NothingIsStoredTestCase(TestCase):
             sequencing_experiment=sample, present=True, frequency="1.0")
 
         self.assertEqual(before + 1,
-                         len(get_needle_plot_data(self.experiment.ale_id)))
+                         len(get_needle_plot_data(self.experiment.id)))
 
     def test_the_plot_and_the_overview_counts_agree(self):
         """They are rendered on one page and used to be two caches that could fall out of
@@ -406,8 +406,8 @@ class NothingIsStoredTestCase(TestCase):
         cache again."""
         from aledb_stats.util import get_experiment_summary
 
-        summary = get_experiment_summary(self.experiment.ale_id)
-        needle = get_needle_plot_data(self.experiment.ale_id)
+        summary = get_experiment_summary(self.experiment.id)
+        needle = get_needle_plot_data(self.experiment.id)
 
         self.assertEqual(sum(summary.observed_mutation_type_counts.values()),
                          len(needle))

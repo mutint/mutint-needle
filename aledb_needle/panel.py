@@ -21,13 +21,13 @@ def needle_panel_context(experiment, request):
     """
     from aledb_seq.views.common import get_ale_id
 
-    axis = needle_plot_axis(experiment.ale_id, request.GET.get("contig"))
+    axis = needle_plot_axis(experiment.id, request.GET.get("contig"))
     return {
-        "ale_experiment_id": experiment.ale_id,
+        "ale_experiment_id": experiment.id,
         "ale_no": get_ale_id(request),
         "needle_axis": axis,
         # Handed to the page through `json_script`, not as a Python repr interpolated into a
         # JS literal -- which is what `mark_safe(list(...))` was, and which only worked
         # because a repr of this particular shape happens to be valid JavaScript.
-        "needle_plot_data": list(get_needle_plot_data(experiment.ale_id, axis["contig"])),
+        "needle_plot_data": list(get_needle_plot_data(experiment.id, axis["contig"])),
     }
