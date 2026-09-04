@@ -86,7 +86,7 @@ old constant happened to be right.
 `get_needle_plot_data` was `aledb_stats.StaticData`, a JSON blob kept current by a registered
 rebuilder since long before there was a rebuild registry. Reading three columns as
 `values_list` tuples costs **0.05s** on the largest experiment in the dev database (52,139
-observations) against **3.38s** to rebuild the stored answer, so the cache paid for a staleness
+calls) against **3.38s** to rebuild the stored answer, so the cache paid for a staleness
 row, an `ensure_fresh` on the read path and a rebuilder, to save nothing.
 
 It is also what removed a failure mode: `/stats` renders this beside `aledb_stats`'s counts,
@@ -101,7 +101,7 @@ stale. Neither is stored now and both read the same queryset, so they cannot.
 - **It applies no view filter.** The Overview summarises what the experiment holds, the way the
   dashboard does, rather than being a table you read rows through. `{% view_filter_summary %}`
   is deliberately absent for the same reason.
-- **It subtracts the ancestor**, through `get_evolved_observation_queryset`, like every other
+- **It subtracts the ancestor**, through `get_evolved_call_queryset`, like every other
   derivation in the suite. That is not optional and has no toggle.
 
 ## Tests

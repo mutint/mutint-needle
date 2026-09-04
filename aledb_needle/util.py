@@ -8,9 +8,9 @@ lived; they read core's models through `aledb_seq`, as any plugin's derivation d
 from django.db.models import Count
 
 from aledb_experiment.ordering import sample_order
-from aledb_seq.util import get_evolved_observation_queryset
+from aledb_seq.util import get_evolved_call_queryset
 
-#: The order `filter_observed_mutations` returns rows in. Kept here so the computed needle
+#: The order `filter_mutation_calls` returns rows in. Kept here so the computed needle
 #: plot is element-for-element what the stored one was, rather than the same points shuffled.
 ROW_ORDER = sample_order("sample__")
 
@@ -57,7 +57,7 @@ def needle_plot_axis(experiment_id, contig=None):
     from aledb_seq.models import ExperimentReference
 
     counts = {row["mutation__reseq_reference"]: row["n"]
-              for row in (get_evolved_observation_queryset(experiment_id)
+              for row in (get_evolved_call_queryset(experiment_id)
                           .values("mutation__reseq_reference")
                           .annotate(n=Count("id")))
               if row["mutation__reseq_reference"]}
@@ -96,18 +96,18 @@ def needle_plot_axis(experiment_id, contig=None):
 
 
 def get_needle_plot_data(experiment_id, contig=None):
-    """`{coord, category, value}` per observed mutation, computed now.
+    """`{coord, category, value}` per mutation call, computed now.
 
     **Nothing is stored.** `StaticData` held this as a JSON blob kept current through the
     `static_data` rebuilder, and it was the oldest cache on the page -- precomputed at import
     since long before the rebuild registry existed. Reading three columns as tuples instead of
     instantiating the rows costs 0.05s on the largest experiment in the dev database, 52 139
-    observations, against 3.38s for the model-instance path above.
+    calls, against 3.38s for the model-instance path above.
 
     That number is what removes the failure mode the `ensure_fresh` here existed for. `/stats`
     renders this *and* `get_experiment_summary` from the same mutations, and while both were
     stored they could disagree in the same viewport -- one refreshed, the other stale. Neither
-    is stored now and both read `get_observed_mutation_queryset`, so they cannot.
+    is stored now and both read `get_mutation_call_queryset`, so they cannot.
 
     Ordered, and deliberately: the plot does not care, but "the same points in a different
     order" is a difference a reader would have to rule out by hand every time this is compared
@@ -119,7 +119,7 @@ def get_needle_plot_data(experiment_id, contig=None):
     Two columns rather than four: the gene and the experiment were fetched only to apply the
     ignored-gene list per row.
     """
-    queryset = get_evolved_observation_queryset(experiment_id)
+    queryset = get_evolved_call_queryset(experiment_id)
     if contig:
         # Scoped to one contig, because `coord` carries no sequence name and two contigs'
         # positions on one axis is a plot of nothing. See `needle_plot_axis`.

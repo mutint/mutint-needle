@@ -4,10 +4,10 @@ Moved here with the code when the plot became its own component. Core cannot run
 plot is not installed there -- so they run under an assembled project, `./mutint test
 aledb_needle`, as every plugin's do.
 
-`/stats` draws one needle per observed mutation at `{coord, category, value}`. That list was
+`/stats` draws one needle per mutation call at `{coord, category, value}`. That list was
 held in `StaticData` as a JSON blob, precomputed at import since long before there was a
 rebuild registry, and it is now built by the request that renders it -- from three columns as
-tuples rather than from every observation as a model instance.
+tuples rather than from every call as a model instance.
 
 Two things are worth pinning and neither was tested before:
 
@@ -30,7 +30,7 @@ from aledb_experiment.models import (
 )
 from aledb_import import breseq_folder
 from aledb_import.tests import breseq_fixture
-from aledb_seq.models import (ExperimentReference, Mutation, ObservedMutation,
+from aledb_seq.models import (ExperimentReference, Mutation, MutationCall,
                               Sample)
 from aledb_needle.util import get_needle_plot_data, needle_plot_axis
 
@@ -72,7 +72,7 @@ class NeedlePlotTestCase(TestCase):
             sequence_change="A>T", protein_change="", gene=gene)
 
     def _observe(self, sample, mutation, frequency="1.0000"):
-        return ObservedMutation.objects.create(
+        return MutationCall.objects.create(
             sample=sample, mutation=mutation,
             present=True, frequency=frequency)
 
@@ -93,8 +93,8 @@ class NeedlePlotTestCase(TestCase):
         return get_needle_plot_data(self.experiment.id)
 
     # ---- the shape -------------------------------------------------------------------
-    def test_one_needle_per_observation(self):
-        """Per observation, not per mutation: a mutation seen in two samples is two
+    def test_one_needle_per_call(self):
+        """Per call, not per mutation: a mutation seen in two samples is two
         needles, which is what makes the plot's height mean anything."""
         shared = self._mutation("SNP", 150, gene="thrA")
         self._observe(self.first, shared)
@@ -145,8 +145,8 @@ class NeedlePlotTestCase(TestCase):
                          inspect.signature(get_needle_plot_data).parameters)
 
     # ---- nothing is stored -----------------------------------------------------------
-    def test_it_reflects_a_new_observation_immediately(self):
-        """`StaticData` was rebuilt through the 'static_data' rebuilder, so a new observation
+    def test_it_reflects_a_new_call_immediately(self):
+        """`StaticData` was rebuilt through the 'static_data' rebuilder, so a new call
         appeared only once something marked it stale. There is no such window now, and that
         is the behaviour the rebuilder was traded for."""
         self._observe(self.first, self._mutation("SNP", 150, gene="thrA"))
@@ -210,13 +210,13 @@ class NeedlePlotAxisTestCase(TestCase):
     def test_an_experiment_with_no_mutations_still_names_its_reference_sequence(self):
         """The sequences come from the reference, so they are known whether or not anything
         was found on them -- and an empty axis over the right genome is an answer."""
-        ObservedMutation.objects.all().delete()
+        MutationCall.objects.all().delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNotNone(axis["contig"])
         self.assertEqual([0], [e["count"] for e in axis["contigs"]])
 
     def test_with_neither_a_reference_nor_mutations_there_is_nothing_to_name(self):
-        ObservedMutation.objects.all().delete()
+        MutationCall.objects.all().delete()
         ExperimentReference.objects.filter(experiment=self.experiment).delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["contig"])
@@ -227,7 +227,7 @@ class ContigPickerTestCase(TestCase):
     """A multi-contig reference offers every one of its sequences, longest first.
 
     The plot draws one sequence, and that sequence used to be decided for the reader: the
-    contig with the most observations was hardcoded as the answer rather than as the default,
+    contig with the most calls was hardcoded as the answer rather than as the default,
     so a plasmid's mutations were on no page in the product at all. The page said which contig
     it was drawing, which made the omission visible without making it fixable.
 
@@ -315,7 +315,7 @@ class ContigPickerTestCase(TestCase):
         plasmid and the page says nothing is. Left out of the menu it would be
         indistinguishable from a sequence this reference does not have, and the count beside
         the name is what tells those apart."""
-        ObservedMutation.objects.filter(mutation__reseq_reference="plasmid").delete()
+        MutationCall.objects.filter(mutation__reseq_reference="plasmid").delete()
 
         axis = needle_plot_axis(self.experiment.id)
 
@@ -386,14 +386,14 @@ class NothingIsStoredTestCase(TestCase):
             self.drop, project_name="P", experiment_name="e", person="stored")
         self.experiment = Sample.objects.get().experiment
 
-    def test_a_new_observation_is_visible_with_nothing_rebuilt(self):
+    def test_a_new_call_is_visible_with_nothing_rebuilt(self):
         """The property the removal bought: no marking, no rebuilding, nobody asked."""
         before = len(get_needle_plot_data(self.experiment.id))
 
         mutation = Mutation.objects.filter(
             experiment=self.experiment).first()
         sample = Sample.objects.get()
-        ObservedMutation.objects.create(
+        MutationCall.objects.create(
             mutation=Mutation.objects.create(
                 experiment=self.experiment,
                 reseq_reference=mutation.reseq_reference,
@@ -414,7 +414,7 @@ class NothingIsStoredTestCase(TestCase):
         summary = get_experiment_summary(self.experiment.id)
         needle = get_needle_plot_data(self.experiment.id)
 
-        self.assertEqual(sum(summary.observed_mutation_type_counts.values()),
+        self.assertEqual(sum(summary.call_type_counts.values()),
                          len(needle))
 
 

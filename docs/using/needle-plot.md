@@ -1,6 +1,6 @@
 # The needle plot
 
-One needle per observed mutation, drawn along the axis of one of the reference's sequences and
+One needle per mutation call, drawn along the axis of one of the reference's sequences and
 coloured by mutation type. It sits on an experiment's Overview page (`/stats`), under the
 counts and the sample table, and it is drawn from the mutations as they stand — there is
 nothing stored to keep current, so it cannot disagree with the tables beside it.
