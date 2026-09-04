@@ -186,7 +186,7 @@ class NeedlePlotAxisTestCase(TestCase):
     def test_it_names_the_contig_the_mutations_are_on(self):
         axis = needle_plot_axis(self.experiment.id)
         self.assertEqual(
-            set(Mutation.objects.values_list("reseq_reference", flat=True)),
+            set(Mutation.objects.values_list("seq_id", flat=True)),
             {axis["contig"]})
         self.assertEqual([axis["contig"]], [e["id"] for e in axis["contigs"]])
 
@@ -312,7 +312,7 @@ class ContigPickerTestCase(TestCase):
         plasmid and the page says nothing is. Left out of the menu it would be
         indistinguishable from a sequence this reference does not have, and the count beside
         the name is what tells those apart."""
-        MutationCall.objects.filter(mutation__reseq_reference="plasmid").delete()
+        MutationCall.objects.filter(mutation__seq_id="plasmid").delete()
 
         axis = needle_plot_axis(self.experiment.id)
 
@@ -325,7 +325,7 @@ class ContigPickerTestCase(TestCase):
         """A mutation can name a contig the stored reference does not list. It has no length,
         so it sorts below everything that does -- but dropping it would leave mutations the
         experiment holds on no axis at all."""
-        Mutation.objects.filter(reseq_reference="plasmid").update(reseq_reference="contig9")
+        Mutation.objects.filter(seq_id="plasmid").update(seq_id="contig9")
 
         axis = needle_plot_axis(self.experiment.id)
 
@@ -393,7 +393,7 @@ class NothingIsStoredTestCase(TestCase):
         MutationCall.objects.create(
             mutation=Mutation.objects.create(
                 experiment=self.experiment,
-                reseq_reference=mutation.reseq_reference,
+                seq_id=mutation.seq_id,
                 position=4321, mutation_type="SNP", sequence_change="A>C",
                 gene="thrA", protein_change="", annotation={}, gd_data={}),
             sample=sample, present=True, frequency="1.0")

@@ -56,11 +56,11 @@ def needle_plot_axis(experiment_id, contig=None):
     """
     from aledb_sample.models import ReferenceSequence
 
-    counts = {row["mutation__reseq_reference"]: row["n"]
+    counts = {row["mutation__seq_id"]: row["n"]
               for row in (get_evolved_call_queryset(experiment_id)
-                          .values("mutation__reseq_reference")
+                          .values("mutation__seq_id")
                           .annotate(n=Count("id")))
-              if row["mutation__reseq_reference"]}
+              if row["mutation__seq_id"]}
 
     lengths = {}
     try:
@@ -123,7 +123,7 @@ def get_needle_plot_data(experiment_id, contig=None):
     if contig:
         # Scoped to one contig, because `coord` carries no sequence name and two contigs'
         # positions on one axis is a plot of nothing. See `needle_plot_axis`.
-        queryset = queryset.filter(mutation__reseq_reference=contig)
+        queryset = queryset.filter(mutation__seq_id=contig)
     rows = queryset.order_by(*ROW_ORDER).values_list(
         "mutation__position", "mutation__mutation_type",
     ).iterator(chunk_size=2000)
