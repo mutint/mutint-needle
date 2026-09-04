@@ -63,7 +63,7 @@ class NeedlePlotTestCase(TestCase):
             population=ale_row, value=flask,
             defaults={"media": self.context["media"]})
         return Sample.objects.create(
-            time_point=flask_row, name="1-1", is_population=False,
+            time_point=flask_row, name="1-1", is_clonal=True,
             source_name="%d-%d-1-1" % (ale, flask))
 
     def _mutation(self, mutation_type, position, gene):
