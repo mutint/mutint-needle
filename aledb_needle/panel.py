@@ -16,15 +16,15 @@ def needle_panel_context(experiment, request):
     plasmid's plot is a link somebody can send. An unrecognised value falls back to the
     default, which is the reference's longest sequence -- see `needle_plot_axis`.
 
-    `ale_no` is read back out only so the picker's links preserve an ALE the reader arrived
-    with, through `get_ale_id` rather than a second reading of the same parameter.
+    `population` is read back out only so the picker's links preserve an ALE the reader arrived
+    with, through `get_population` rather than a second reading of the same parameter.
     """
-    from aledb_seq.views.common import get_ale_id
+    from aledb_seq.views.common import get_population
 
     axis = needle_plot_axis(experiment.id, request.GET.get("contig"))
     return {
-        "ale_experiment_id": experiment.id,
-        "ale_no": get_ale_id(request),
+        "experiment_id": experiment.id,
+        "population": get_population(request),
         "needle_axis": axis,
         # Handed to the page through `json_script`, not as a Python repr interpolated into a
         # JS literal -- which is what `mark_safe(list(...))` was, and which only worked

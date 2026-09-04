@@ -27,7 +27,7 @@
         <ul class="dropdown-menu aledb-menu">
             {% for entry in needle_axis.contigs %}
                 <li{% if entry.id == needle_axis.contig %} class="active"{% endif %}>
-                    <a href="?{{ PARAM_EXPERIMENT }}={{ ale_experiment_id }}{% if ale_no %}&amp;{{ PARAM_ALE }}={{ ale_no }}{% endif %}&amp;contig={{ entry.id|urlencode }}">{{ entry.id }} <span class="text-muted">({{ entry.count }})</span></a>
+                    <a href="?{{ PARAM_EXPERIMENT }}={{ experiment_id }}{% if population %}&amp;{{ PARAM_POPULATION }}={{ population }}{% endif %}&amp;contig={{ entry.id|urlencode }}">{{ entry.id }} <span class="text-muted">({{ entry.count }})</span></a>
                 </li>
             {% endfor %}
         </ul>

@@ -27,7 +27,7 @@ with no mutations at all**. Selecting it draws an empty axis, which is an answer
 what is on the plasmid and the plot says nothing is. A sequence left out of the menu would be
 indistinguishable from one the reference does not have.
 
-The choice is in the URL — `?ale_experiment_id=4&contig=pXYZ` — so a particular sequence's
+The choice is in the URL — `?experiment_id=4&contig=pXYZ` — so a particular sequence's
 plot is a link you can send.
 
 ## What the axis is

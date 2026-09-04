@@ -24,7 +24,7 @@ import tempfile
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
-from aledb_common.constants import REQUEST_ALE_EXPERIMENT_ID
+from aledb_common.constants import REQUEST_EXPERIMENT_ID
 from aledb_experiment.models import (
     Experiment, Population, TimePoint,
 )
@@ -47,7 +47,7 @@ class NeedlePlotTestCase(TestCase):
         self.user = User.objects.create(username="needle", email="n@e.com", is_active=True)
         self.client.force_login(self.user)
         created = self.client.post(
-            "/ale/projects/create/", {"name": "P", "experiment": "E"}).json()
+            "/project/create/", {"name": "P", "experiment": "E"}).json()
         self.experiment = Experiment.objects.get(pk=created["experiment_id"])
 
         from aledb_import.gd_import import prepare_experiment_by_id
@@ -344,7 +344,7 @@ class ContigPickerTestCase(TestCase):
         # follow=True: `/stats` is an APPEND_SLASH redirect, as every other test of this
         # page has to do too.
         response = self.client.get(
-            "/stats?ale_experiment_id=%s&contig=plasmid" % self.experiment.id,
+            "/stats?experiment_id=%s&contig=plasmid" % self.experiment.id,
             follow=True)
 
         self.assertEqual(200, response.status_code)
@@ -356,7 +356,7 @@ class ContigPickerTestCase(TestCase):
         # gets no context processors, so that name would come out empty and every contig
         # link would silently drop the experiment -- while `contig=plasmid` above still
         # passed.
-        self.assertIn("?%s=%s&amp;" % (REQUEST_ALE_EXPERIMENT_ID, self.experiment.id), body)
+        self.assertIn("?%s=%s&amp;" % (REQUEST_EXPERIMENT_ID, self.experiment.id), body)
 
 
 class NothingIsStoredTestCase(TestCase):
