@@ -395,7 +395,7 @@ class NothingIsStoredTestCase(TestCase):
                 experiment=self.experiment,
                 seq_id=mutation.seq_id,
                 start_position=4321, mutation_type="SNP", sequence_change="A>C",
-                gene="thrA", protein_change="", annotation={}, gd_data={}),
+                gene="thrA", protein_change="", annotation={}, extended_fields=Mutation.genome_diff_container({})),
             sample=sample, present=True, frequency="1.0")
 
         self.assertEqual(before + 1,
