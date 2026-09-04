@@ -26,7 +26,7 @@ from django.test import TestCase, override_settings
 
 from aledb_common.constants import REQUEST_ALE_EXPERIMENT_ID
 from aledb_experiment.models import (
-    AleExperiment, AleId, Flask, Isolate, TechnicalReplicate,
+    AleExperiment, AleId, Flask,
 )
 from aledb_import import breseq_folder
 from aledb_import.tests import breseq_fixture
@@ -62,11 +62,9 @@ class NeedlePlotTestCase(TestCase):
         flask_row, _ = Flask.objects.get_or_create(
             ale_id=ale_row, flask_number=flask,
             defaults={"media": self.context["media"]})
-        isolate = Isolate.objects.create(
-            flask=flask_row, isolate_number=1, is_population=False)
-        tech_rep = TechnicalReplicate.objects.create(isolate=isolate, tech_rep_number=1)
         return ResequencingExperiment.objects.create(
-            tech_rep=tech_rep, sample_name="%d-%d-1-1" % (ale, flask))
+            flask=flask_row, isolate_number="1-1", is_population=False,
+            sample_name="%d-%d-1-1" % (ale, flask))
 
     def _mutation(self, mutation_type, position, gene):
         return Mutation.objects.create(
