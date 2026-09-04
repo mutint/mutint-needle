@@ -30,7 +30,7 @@ from aledb_experiment.models import (
 )
 from aledb_import import breseq_folder
 from aledb_import.tests import breseq_fixture
-from aledb_seq.models import (ExperimentReference, Mutation, MutationCall,
+from aledb_sample.models import (ExperimentReference, Mutation, MutationCall,
                               Sample)
 from aledb_needle.util import get_needle_plot_data, needle_plot_axis
 

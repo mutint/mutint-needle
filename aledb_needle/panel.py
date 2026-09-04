@@ -19,7 +19,7 @@ def needle_panel_context(experiment, request):
     `population` is read back out only so the picker's links preserve an ALE the reader arrived
     with, through `get_population` rather than a second reading of the same parameter.
     """
-    from aledb_seq.views.common import get_population
+    from aledb_sample.views.common import get_population
 
     axis = needle_plot_axis(experiment.id, request.GET.get("contig"))
     return {
