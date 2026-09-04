@@ -54,7 +54,7 @@ def needle_plot_axis(experiment_id, contig=None):
     That is also the one case where the sequences are not known independently of the
     mutations, so the list is what the mutations name and the busiest is the default.
     """
-    from aledb_sample.models import ReferenceSequence
+    from aledb_sample.models import ReferenceSequences
 
     counts = {row["mutation__seq_id"]: row["n"]
               for row in (get_evolved_call_queryset(experiment_id)
@@ -64,8 +64,8 @@ def needle_plot_axis(experiment_id, contig=None):
 
     lengths = {}
     try:
-        reference = ReferenceSequence.objects.get(experiment_id=experiment_id)
-    except ReferenceSequence.DoesNotExist:
+        reference = ReferenceSequences.objects.get(experiment_id=experiment_id)
+    except ReferenceSequences.DoesNotExist:
         reference = None
     if reference:
         for entry in reference.seq_ids or []:
