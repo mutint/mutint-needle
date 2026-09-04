@@ -37,7 +37,7 @@ multi-contig reference drew every contig on top of itself on one axis. Both fail
 the plot rendered, it simply was not about this genome.
 
 `needle_plot_axis` names the sequence to draw and reads its length from
-`ExperimentReference.seq_ids`; `get_needle_plot_data(experiment_id, contig)` is scoped to it.
+`ReferenceSequence.seq_ids`; `get_needle_plot_data(experiment_id, contig)` is scoped to it.
 One sequence at a time rather than a concatenated axis, because offsets the reader cannot see
 turn every coordinate into one that matches nothing in the tables.
 

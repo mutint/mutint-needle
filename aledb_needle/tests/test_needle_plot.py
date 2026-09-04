@@ -30,7 +30,7 @@ from aledb_experiment.models import (
 )
 from aledb_import import breseq_folder
 from aledb_import.tests import breseq_fixture
-from aledb_sample.models import (ExperimentReference, Mutation, MutationCall,
+from aledb_sample.models import (ReferenceSequence, Mutation, MutationCall,
                               Sample)
 from aledb_needle.util import get_needle_plot_data, needle_plot_axis
 
@@ -178,7 +178,7 @@ class NeedlePlotAxisTestCase(TestCase):
 
     def test_the_length_comes_from_the_stored_reference(self):
         axis = needle_plot_axis(self.experiment.id)
-        reference = ExperimentReference.objects.get(experiment=self.experiment)
+        reference = ReferenceSequence.objects.get(experiment=self.experiment)
         entry = next(e for e in reference.seq_ids if e["id"] == axis["contig"])
         self.assertEqual(entry["length"], axis["length"])
         self.assertNotEqual(5000000, axis["length"])
@@ -199,7 +199,7 @@ class NeedlePlotAxisTestCase(TestCase):
     def test_no_reference_leaves_the_length_unknown_rather_than_guessed(self):
         """The page then falls back to the data's own extent, which is still truer than a
         constant -- an experiment imported from bare .gd files has no reference at all."""
-        ExperimentReference.objects.filter(experiment=self.experiment).delete()
+        ReferenceSequence.objects.filter(experiment=self.experiment).delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["length"])
         self.assertIsNotNone(axis["contig"])
@@ -214,7 +214,7 @@ class NeedlePlotAxisTestCase(TestCase):
 
     def test_with_neither_a_reference_nor_mutations_there_is_nothing_to_name(self):
         MutationCall.objects.all().delete()
-        ExperimentReference.objects.filter(experiment=self.experiment).delete()
+        ReferenceSequence.objects.filter(experiment=self.experiment).delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["contig"])
         self.assertEqual([], axis["contigs"])
