@@ -12,7 +12,7 @@ from aledb_seq.util import get_evolved_observation_queryset
 
 #: The order `filter_observed_mutations` returns rows in. Kept here so the computed needle
 #: plot is element-for-element what the stored one was, rather than the same points shuffled.
-ROW_ORDER = sample_order("sequencing_experiment__")
+ROW_ORDER = sample_order("sample__")
 
 
 def needle_plot_axis(experiment_id, contig=None):
@@ -64,7 +64,7 @@ def needle_plot_axis(experiment_id, contig=None):
 
     lengths = {}
     try:
-        reference = ExperimentReference.objects.get(ale_experiment_id=experiment_id)
+        reference = ExperimentReference.objects.get(experiment_id=experiment_id)
     except ExperimentReference.DoesNotExist:
         reference = None
     if reference:

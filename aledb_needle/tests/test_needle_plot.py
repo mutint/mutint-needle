@@ -26,12 +26,12 @@ from django.test import TestCase, override_settings
 
 from aledb_common.constants import REQUEST_ALE_EXPERIMENT_ID
 from aledb_experiment.models import (
-    AleExperiment, AleId, Flask,
+    Experiment, Population, TimePoint,
 )
 from aledb_import import breseq_folder
 from aledb_import.tests import breseq_fixture
 from aledb_seq.models import (ExperimentReference, Mutation, ObservedMutation,
-                              ResequencingExperiment)
+                              Sample)
 from aledb_needle.util import get_needle_plot_data, needle_plot_axis
 
 
@@ -48,7 +48,7 @@ class NeedlePlotTestCase(TestCase):
         self.client.force_login(self.user)
         created = self.client.post(
             "/ale/projects/create/", {"name": "P", "experiment": "E"}).json()
-        self.experiment = AleExperiment.objects.get(pk=created["experiment_id"])
+        self.experiment = Experiment.objects.get(pk=created["experiment_id"])
 
         from aledb_import.gd_import import prepare_experiment_by_id
         self.context = prepare_experiment_by_id(self.experiment.id)
@@ -57,23 +57,23 @@ class NeedlePlotTestCase(TestCase):
         self.second = self._sample(ale=2, flask=100)
 
     def _sample(self, ale, flask):
-        ale_row, _ = AleId.objects.get_or_create(
-            ale_experiment=self.experiment, ale_id=ale)
-        flask_row, _ = Flask.objects.get_or_create(
-            ale_id=ale_row, flask_number=flask,
+        ale_row, _ = Population.objects.get_or_create(
+            experiment=self.experiment, name=ale)
+        flask_row, _ = TimePoint.objects.get_or_create(
+            population=ale_row, value=flask,
             defaults={"media": self.context["media"]})
-        return ResequencingExperiment.objects.create(
-            flask=flask_row, isolate_number="1-1", is_population=False,
-            sample_name="%d-%d-1-1" % (ale, flask))
+        return Sample.objects.create(
+            time_point=flask_row, name="1-1", is_population=False,
+            source_name="%d-%d-1-1" % (ale, flask))
 
     def _mutation(self, mutation_type, position, gene):
         return Mutation.objects.create(
-            ale_experiment=self.experiment, mutation_type=mutation_type, position=position,
+            experiment=self.experiment, mutation_type=mutation_type, position=position,
             sequence_change="A>T", protein_change="", gene=gene)
 
     def _observe(self, sample, mutation, frequency="1.0000"):
         return ObservedMutation.objects.create(
-            sequencing_experiment=sample, mutation=mutation,
+            sample=sample, mutation=mutation,
             present=True, frequency=frequency)
 
     def _filter(self, **fields):
@@ -177,11 +177,11 @@ class NeedlePlotAxisTestCase(TestCase):
         breseq_fixture.write_sample(self.drop, "s1")
         breseq_folder.import_breseq_folders(
             self.drop, project_name="P", experiment_name="e", person="axis")
-        self.experiment = ResequencingExperiment.objects.get().ale_experiment
+        self.experiment = Sample.objects.get().experiment
 
     def test_the_length_comes_from_the_stored_reference(self):
         axis = needle_plot_axis(self.experiment.id)
-        reference = ExperimentReference.objects.get(ale_experiment=self.experiment)
+        reference = ExperimentReference.objects.get(experiment=self.experiment)
         entry = next(e for e in reference.seq_ids if e["id"] == axis["contig"])
         self.assertEqual(entry["length"], axis["length"])
         self.assertNotEqual(5000000, axis["length"])
@@ -202,7 +202,7 @@ class NeedlePlotAxisTestCase(TestCase):
     def test_no_reference_leaves_the_length_unknown_rather_than_guessed(self):
         """The page then falls back to the data's own extent, which is still truer than a
         constant -- an experiment imported from bare .gd files has no reference at all."""
-        ExperimentReference.objects.filter(ale_experiment=self.experiment).delete()
+        ExperimentReference.objects.filter(experiment=self.experiment).delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["length"])
         self.assertIsNotNone(axis["contig"])
@@ -217,7 +217,7 @@ class NeedlePlotAxisTestCase(TestCase):
 
     def test_with_neither_a_reference_nor_mutations_there_is_nothing_to_name(self):
         ObservedMutation.objects.all().delete()
-        ExperimentReference.objects.filter(ale_experiment=self.experiment).delete()
+        ExperimentReference.objects.filter(experiment=self.experiment).delete()
         axis = needle_plot_axis(self.experiment.id)
         self.assertIsNone(axis["contig"])
         self.assertEqual([], axis["contigs"])
@@ -261,7 +261,7 @@ class ContigPickerTestCase(TestCase):
             gd_text=self.GD_TEXT)
         breseq_folder.import_breseq_folders(
             self.drop, project_name="P", experiment_name="e", person="picker")
-        self.experiment = ResequencingExperiment.objects.get().ale_experiment
+        self.experiment = Sample.objects.get().experiment
 
     def test_every_sequence_is_offered_longest_first(self):
         axis = needle_plot_axis(self.experiment.id)
@@ -384,22 +384,22 @@ class NothingIsStoredTestCase(TestCase):
         breseq_fixture.write_sample(self.drop, "s1")
         breseq_folder.import_breseq_folders(
             self.drop, project_name="P", experiment_name="e", person="stored")
-        self.experiment = ResequencingExperiment.objects.get().ale_experiment
+        self.experiment = Sample.objects.get().experiment
 
     def test_a_new_observation_is_visible_with_nothing_rebuilt(self):
         """The property the removal bought: no marking, no rebuilding, nobody asked."""
         before = len(get_needle_plot_data(self.experiment.id))
 
         mutation = Mutation.objects.filter(
-            ale_experiment=self.experiment).first()
-        sample = ResequencingExperiment.objects.get()
+            experiment=self.experiment).first()
+        sample = Sample.objects.get()
         ObservedMutation.objects.create(
             mutation=Mutation.objects.create(
-                ale_experiment=self.experiment,
+                experiment=self.experiment,
                 reseq_reference=mutation.reseq_reference,
                 position=4321, mutation_type="SNP", sequence_change="A>C",
                 gene="thrA", protein_change="", annotation={}, gd_data={}),
-            sequencing_experiment=sample, present=True, frequency="1.0")
+            sample=sample, present=True, frequency="1.0")
 
         self.assertEqual(before + 1,
                          len(get_needle_plot_data(self.experiment.id)))
