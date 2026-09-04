@@ -173,7 +173,7 @@ class NeedlePlotAxisTestCase(TestCase):
 
         breseq_fixture.write_sample(self.drop, "s1")
         breseq_folder.import_breseq_folders(
-            self.drop, project_name="P", experiment_name="e", person="axis")
+            self.drop, project_name="P", experiment_name="e", owner_name="axis")
         self.experiment = Sample.objects.get().experiment
 
     def test_the_length_comes_from_the_stored_reference(self):
@@ -257,7 +257,7 @@ class ContigPickerTestCase(TestCase):
                        ("plasmid", breseq_fixture.SEQUENCE_B)],
             gd_text=self.GD_TEXT)
         breseq_folder.import_breseq_folders(
-            self.drop, project_name="P", experiment_name="e", person="picker")
+            self.drop, project_name="P", experiment_name="e", owner_name="picker")
         self.experiment = Sample.objects.get().experiment
 
     def test_every_sequence_is_offered_longest_first(self):
@@ -367,7 +367,7 @@ class NothingIsStoredTestCase(TestCase):
     """
 
     def setUp(self):
-        # The User first: `find_user` prompts on stdin for a person nothing matches, which
+        # The User first: `find_user` prompts on stdin for a name nothing matches, which
         # under the test runner is an EOFError from inside the importer.
         self.user = User.objects.create(username="stored", email="s@e.com", is_active=True)
         self.drop = tempfile.mkdtemp()
@@ -380,7 +380,7 @@ class NothingIsStoredTestCase(TestCase):
 
         breseq_fixture.write_sample(self.drop, "s1")
         breseq_folder.import_breseq_folders(
-            self.drop, project_name="P", experiment_name="e", person="stored")
+            self.drop, project_name="P", experiment_name="e", owner_name="stored")
         self.experiment = Sample.objects.get().experiment
 
     def test_a_new_call_is_visible_with_nothing_rebuilt(self):
