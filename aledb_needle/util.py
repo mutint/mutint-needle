@@ -125,7 +125,7 @@ def get_needle_plot_data(experiment_id, contig=None):
         # positions on one axis is a plot of nothing. See `needle_plot_axis`.
         queryset = queryset.filter(mutation__seq_id=contig)
     rows = queryset.order_by(*ROW_ORDER).values_list(
-        "mutation__position", "mutation__mutation_type",
+        "mutation__start_position", "mutation__mutation_type",
     ).iterator(chunk_size=2000)
 
     return [{'coord': str(position), 'category': mutation_type, 'value': 1}

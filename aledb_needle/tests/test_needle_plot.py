@@ -65,7 +65,7 @@ class NeedlePlotTestCase(TestCase):
 
     def _mutation(self, mutation_type, position, gene):
         return Mutation.objects.create(
-            experiment=self.experiment, mutation_type=mutation_type, position=position,
+            experiment=self.experiment, mutation_type=mutation_type, start_position=position,
             sequence_change="A>T", protein_change="", gene=gene)
 
     def _observe(self, sample, mutation, frequency="1.0000"):
@@ -394,7 +394,7 @@ class NothingIsStoredTestCase(TestCase):
             mutation=Mutation.objects.create(
                 experiment=self.experiment,
                 seq_id=mutation.seq_id,
-                position=4321, mutation_type="SNP", sequence_change="A>C",
+                start_position=4321, mutation_type="SNP", sequence_change="A>C",
                 gene="thrA", protein_change="", annotation={}, gd_data={}),
             sample=sample, present=True, frequency="1.0")
 
