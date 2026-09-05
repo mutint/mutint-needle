@@ -8,7 +8,7 @@ __pycache__/
 *.sqlite3
 local_settings.py
 # Anchored, unlike the copy of this file in the other plugin repos. `static/` unanchored also
-# matches `aledb_needle/static/`, which is where this component's vendored assets live -- and
+# matches `mutint_needle/static/`, which is where this component's vendored assets live -- and
 # `git add` skipping them is silent, so the plot would simply not draw in a fresh clone. Only
 # a STATIC_ROOT at the repo root is ignored here.
 /static/

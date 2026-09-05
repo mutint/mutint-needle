@@ -1,14 +1,14 @@
 """The needle plot's data and its axis.
 
-Both were `aledb_stats.util` functions until this became its own component. Nothing about
+Both were `mutint_stats.util` functions until this became its own component. Nothing about
 them changed in the move except the two paragraphs of docstring that described where they
-lived; they read core's models through `aledb_sample`, as any plugin's derivation does.
+lived; they read core's models through `mutint_sample`, as any plugin's derivation does.
 """
 
 from django.db.models import Count
 
-from aledb_experiment.ordering import sample_order
-from aledb_sample.util import get_evolved_call_queryset
+from mutint_experiment.ordering import sample_order
+from mutint_sample.util import get_evolved_call_queryset
 
 #: The order `filter_mutation_calls` returns rows in. Kept here so the computed needle
 #: plot is element-for-element what the stored one was, rather than the same points shuffled.
@@ -54,7 +54,7 @@ def needle_plot_axis(experiment_id, contig=None):
     That is also the one case where the sequences are not known independently of the
     mutations, so the list is what the mutations name and the busiest is the default.
     """
-    from aledb_sample.models import ReferenceSequences
+    from mutint_sample.models import ReferenceSequences
 
     counts = {row["mutation__seq_id"]: row["n"]
               for row in (get_evolved_call_queryset(experiment_id)

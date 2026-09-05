@@ -1,7 +1,7 @@
 # Vendored assets
 
 Committed rather than fetched from a CDN so a deployment works with no outbound network, the
-same reason `igv.min.js` is vendored in aledb-core and phylotree in aledb-phylogeny.
+same reason `igv.min.js` is vendored in mutint-core and phylotree in mutint-phylogeny.
 
 | file | source | sha256 |
 |---|---|---|
@@ -13,14 +13,14 @@ same reason `igv.min.js` is vendored in aledb-core and phylotree in aledb-phylog
 
 **No version is recorded, and it cannot be recovered.** These arrived as an `npm install` of
 [muts-needle-plot](https://github.com/bbglab/muts-needle-plot) committed into the repository
-long before this file existed, under a `node_modules/` directory in aledb-core's own static
+long before this file existed, under a `node_modules/` directory in mutint-core's own static
 files — no `package.json` came with them and nothing anywhere says which release they are. The
 hashes above are therefore of the files **as vendored**, which is drift detection and not
 provenance: they were never checked against a published artifact and cannot be. Anybody
 upgrading this library is choosing a version for the first time.
 
 `d3.js` here is **3.5.1**, which the library was built against and which is not
-interchangeable with a modern d3. aledb-phylogeny bundles its own d3 7 inside
+interchangeable with a modern d3. mutint-phylogeny bundles its own d3 7 inside
 `phylotree.min.js`, so the two never meet on a page; nothing else in the suite loads d3.
 
 Four files are vendored and not loaded: `src/js/MutsNeedlePlot.js` and

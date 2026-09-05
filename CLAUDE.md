@@ -1,33 +1,33 @@
-# CLAUDE.md — aledb-needle
+# CLAUDE.md — mutint-needle
 
-The mutation needle plot, as a panel on aledb-core's experiment Overview page.
+The mutation needle plot, as a panel on mutint-core's experiment Overview page.
 
-**The first plugin in the suite that is neither a page nor a model.** aledb-compare,
-aledb-fixation and aledb-converge each own a route and a sidebar entry; aledb-phylogeny owns
+**The first plugin in the suite that is neither a page nor a model.** mutint-compare,
+mutint-fixation and mutint-converge each own a route and a sidebar entry; mutint-phylogeny owns
 those plus a stored table. This one registers a *panel* — a template and a callable that
-builds its context — through `aledb_common.panel_registry`, and contributes no URL, no nav
+builds its context — through `mutint_common.panel_registry`, and contributes no URL, no nav
 entry, no model and no migration. It is the first consumer of that registry, and the reason it
 exists: until then, something that was one panel rather than a page had no seam at all and had
 to live in core.
 
 The other plugin repos carry no `CLAUDE.md`, and this one does because the design notes below
-came out of `aledb-core/CLAUDE.md` with the code. They describe why the plot is built as it
+came out of `mutint-core/CLAUDE.md` with the code. They describe why the plot is built as it
 is, which is a different thing from `docs/using/needle-plot.md`, which says how to read it.
 
 ```
-aledb-needle/
-├── aledb_needle/
+mutint-needle/
+├── mutint_needle/
 │   ├── apps.py        registers the panel and an About section, and nothing else
 │   ├── panel.py       the context the panel template renders from
 │   ├── util.py        needle_plot_axis + get_needle_plot_data — two queries over core's models
 │   ├── templates/needle/panel.html
-│   ├── static/aledb_needle/   muts_needle_plot.js + the vendored library (see VENDOR.md)
+│   ├── static/mutint_needle/   muts_needle_plot.js + the vendored library (see VENDOR.md)
 │   └── tests/
 └── docs/using/needle-plot.md
 ```
 
 It is a submodule of `mutint`. Edit it **here**, in the suite-root checkout, never in
-`mutint/aledb-needle` — see the rules at the top of the suite `CLAUDE.md`.
+`mutint/mutint-needle` — see the rules at the top of the suite `CLAUDE.md`.
 
 ## The plot knows which genome it is drawing
 
@@ -62,8 +62,8 @@ count beside each name is what tells those apart.
 Three more things:
 
 - **The picker is links, not a form**, the same shape as the per-sample page's sample picker,
-  so it needs no script and a plasmid's plot is a URL somebody can send. Its `.aledb-picker`
-  wrapper and `.aledb-menu` list are core's, in `common.css`.
+  so it needs no script and a plasmid's plot is a URL somebody can send. Its `.mutint-picker`
+  wrapper and `.mutint-menu` list are core's, in `common.css`.
 - **An unrecognized `?contig=` falls back to the default** rather than drawing an empty plot,
   as `breseq_table._selected_reseq` does with a sample its own filters exclude. An empty plot
   of a contig that does not exist reads exactly like a contig with no mutations — and that
@@ -83,13 +83,13 @@ old constant happened to be right.
 
 ## Nothing is stored
 
-`get_needle_plot_data` was `aledb_stats.StaticData`, a JSON blob kept current by a registered
+`get_needle_plot_data` was `mutint_stats.StaticData`, a JSON blob kept current by a registered
 rebuilder since long before there was a rebuild registry. Reading three columns as
 `values_list` tuples costs **0.05s** on the largest experiment in the dev database (52,139
 calls) against **3.38s** to rebuild the stored answer, so the cache paid for a staleness
 row, an `ensure_fresh` on the read path and a rebuilder, to save nothing.
 
-It is also what removed a failure mode: `/stats` renders this beside `aledb_stats`'s counts,
+It is also what removed a failure mode: `/stats` renders this beside `mutint_stats`'s counts,
 and while both were stored they could disagree in the same viewport — one refreshed, the other
 stale. Neither is stored now and both read the same queryset, so they cannot.
 
@@ -106,11 +106,11 @@ stale. Neither is stored now and both read the same queryset, so they cannot.
 
 ## Tests
 
-`./mutint test aledb_needle`. There is no way to run them from aledb-core: the plot is not
+`./mutint test mutint_needle`. There is no way to run them from mutint-core: the plot is not
 installed there, which is the point of the split.
 
-`aledb_needle/tests/test_needle_plot.py` builds its own breseq fixture through
-`aledb_import.tests.breseq_fixture`, importing from core as any plugin's tests may. The
+`mutint_needle/tests/test_needle_plot.py` builds its own breseq fixture through
+`mutint_import.tests.breseq_fixture`, importing from core as any plugin's tests may. The
 multi-sequence case puts **more mutations on the short sequence than on the long one**, so the
 list rule and the default rule are tested apart — a fixture where they agree would pass under
 either.

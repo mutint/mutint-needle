@@ -1,9 +1,9 @@
 {% load static %}
 {% comment %} The body of the Overview panel, and nothing else: the heading above it and the
    rule between panels are drawn by `/stats`, so two components cannot disagree about what a
-   section on that page looks like. See aledb_common/panel_registry.py.
+   section on that page looks like. See mutint_common/panel_registry.py.
 
-   This was two templates in aledb_stats -- the picker written out in `stats.html` and the
+   This was two templates in mutint_stats -- the picker written out in `stats.html` and the
    plot in an included `muts_needle_plot.html`. They were split by which file the markup
    happened to be in rather than by anything either half means on its own, and putting them
    back together is what a panel is. {% endcomment %}
@@ -17,14 +17,14 @@
    empty axis, which is an answer. The count beside each name is what distinguishes a sequence
    with nothing on it from one the reference does not have. {% endcomment %}
 {% if needle_axis.contigs|length > 1 %}
-    <div class="aledb-picker">
+    <div class="mutint-picker">
     <b>Sequence:</b>
     <div class="btn-group" id="contig_picker">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
             {{ needle_axis.contig }} <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu aledb-menu">
+        <ul class="dropdown-menu mutint-menu">
             {% for entry in needle_axis.contigs %}
                 <li{% if entry.id == needle_axis.contig %} class="active"{% endif %}>
                     <a href="?{{ PARAM_EXPERIMENT }}={{ experiment_id }}{% if population %}&amp;{{ PARAM_POPULATION }}={{ population }}{% endif %}&amp;contig={{ entry.id|urlencode }}">{{ entry.id }} <span class="text-muted">({{ entry.count }})</span></a>
@@ -39,17 +39,17 @@
     <div id="plot">
         {% comment %} Vendored, like everything else the browser loads -- a deployment works
            with no outbound network. d3 3.5.1 and underscore come with the library and are
-           the versions it was built against; see static/aledb_needle/VENDOR.md. {% endcomment %}
-        <script src="{% static "aledb_needle/muts-needle-plot/build/muts-needle-plot.js" %}"></script>
-        <script src="{% static "aledb_needle/muts-needle-plot/src/js/dependencies/d3.js" %}"></script>
-        <script src="{% static "aledb_needle/muts-needle-plot/src/js/dependencies/underscore.js" %}"></script>
-        <script src="{% static "aledb_needle/muts-needle-plot/src/js/d3-svg-legend.js" %}"></script>
-        <link type="text/css" rel="stylesheet" href="{% static "aledb_needle/muts-needle-plot/build/muts-needle-plot.css" %}">
+           the versions it was built against; see static/mutint_needle/VENDOR.md. {% endcomment %}
+        <script src="{% static "mutint_needle/muts-needle-plot/build/muts-needle-plot.js" %}"></script>
+        <script src="{% static "mutint_needle/muts-needle-plot/src/js/dependencies/d3.js" %}"></script>
+        <script src="{% static "mutint_needle/muts-needle-plot/src/js/dependencies/underscore.js" %}"></script>
+        <script src="{% static "mutint_needle/muts-needle-plot/src/js/d3-svg-legend.js" %}"></script>
+        <link type="text/css" rel="stylesheet" href="{% static "mutint_needle/muts-needle-plot/build/muts-needle-plot.css" %}">
         {% comment %} `?v=` on this component's own file only. Everything above carries its
            version in its path already, so a release cannot serve half of one and half of
-           another. `aledb_version` is aledb-core's, which is what versions this asset too:
+           another. `mutint_version` is mutint-core's, which is what versions this asset too:
            the panel is rendered by core's page and ships no version of its own. {% endcomment %}
-        <script type="text/javascript" src="{% static "aledb_needle/muts_needle_plot.js" %}?v={{ aledb_version }}"></script>
+        <script type="text/javascript" src="{% static "mutint_needle/muts_needle_plot.js" %}?v={{ mutint_version }}"></script>
         {{ needle_plot_data|json_script:"needle-plot-data" }}
         {{ needle_axis|json_script:"needle-plot-axis" }}
         <script type="text/javascript">

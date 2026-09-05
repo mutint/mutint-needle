@@ -2,7 +2,7 @@
 
 Moved here with the code when the plot became its own component. Core cannot run these -- the
 plot is not installed there -- so they run under an assembled project, `./mutint test
-aledb_needle`, as every plugin's do.
+mutint_needle`, as every plugin's do.
 
 `/stats` draws one needle per mutation call at `{coord, category, value}`. That list was
 held in `StaticData` as a JSON blob, precomputed at import since long before there was a
@@ -24,15 +24,15 @@ import tempfile
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
-from aledb_common.constants import REQUEST_EXPERIMENT_ID
-from aledb_experiment.models import (
+from mutint_common.constants import REQUEST_EXPERIMENT_ID
+from mutint_experiment.models import (
     Experiment, Population,
 )
-from aledb_import import breseq_folder
-from aledb_import.tests import breseq_fixture
-from aledb_sample.models import (ReferenceSequences, Mutation, MutationCall,
+from mutint_import import breseq_folder
+from mutint_import.tests import breseq_fixture
+from mutint_sample.models import (ReferenceSequences, Mutation, MutationCall,
                               Sample)
-from aledb_needle.util import get_needle_plot_data, needle_plot_axis
+from mutint_needle.util import get_needle_plot_data, needle_plot_axis
 
 
 class NeedlePlotTestCase(TestCase):
@@ -50,7 +50,7 @@ class NeedlePlotTestCase(TestCase):
             "/project/create/", {"name": "P", "experiment": "E"}).json()
         self.experiment = Experiment.objects.get(pk=created["experiment_id"])
 
-        from aledb_import.gd_import import prepare_experiment_by_id
+        from mutint_import.gd_import import prepare_experiment_by_id
         self.context = prepare_experiment_by_id(self.experiment.id)
 
         self.first = self._sample(ale=1, flask=100)
@@ -80,7 +80,7 @@ class NeedlePlotTestCase(TestCase):
         `AleExperimentFilter`, because an experiment created through the UI had no row until
         something rebuilt one. There is no row: a filter is a value the caller passes in.
         """
-        from aledb_filter.view_filter import ViewFilter
+        from mutint_filter.view_filter import ViewFilter
 
         return ViewFilter.parse(min_freq=fields.get("min_cutoff"),
                                 max_freq=fields.get("max_cutoff"),
@@ -167,7 +167,7 @@ class NeedlePlotAxisTestCase(TestCase):
         self.store = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.drop, True)
         self.addCleanup(shutil.rmtree, self.store, True)
-        patcher = override_settings(ALEDB_STORE_DIR=self.store)
+        patcher = override_settings(MUTINT_STORE_DIR=self.store)
         patcher.enable()
         self.addCleanup(patcher.disable)
 
@@ -247,7 +247,7 @@ class ContigPickerTestCase(TestCase):
         self.store = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.drop, True)
         self.addCleanup(shutil.rmtree, self.store, True)
-        patcher = override_settings(ALEDB_STORE_DIR=self.store)
+        patcher = override_settings(MUTINT_STORE_DIR=self.store)
         patcher.enable()
         self.addCleanup(patcher.disable)
 
@@ -359,9 +359,9 @@ class ContigPickerTestCase(TestCase):
 class NothingIsStoredTestCase(TestCase):
     """The plot is computed by the request that draws it, and this is what says so.
 
-    It was `aledb_stats.StaticData`, a JSON blob kept current by a registered rebuilder. Both
+    It was `mutint_stats.StaticData`, a JSON blob kept current by a registered rebuilder. Both
     halves of that arrangement are gone, and the two assertions here are what is left of two
-    tests in aledb-core that could no longer be written there: core cannot import the plot,
+    tests in mutint-core that could no longer be written there: core cannot import the plot,
     and the plot's own repository is the only place both it and the Overview's counts can be
     read in one process.
     """
@@ -374,7 +374,7 @@ class NothingIsStoredTestCase(TestCase):
         self.store = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.drop, True)
         self.addCleanup(shutil.rmtree, self.store, True)
-        patcher = override_settings(ALEDB_STORE_DIR=self.store)
+        patcher = override_settings(MUTINT_STORE_DIR=self.store)
         patcher.enable()
         self.addCleanup(patcher.disable)
 
@@ -406,7 +406,7 @@ class NothingIsStoredTestCase(TestCase):
         step -- one refreshed by its reader, the other not. Two queries over the same rows
         now, so the agreement is structural; this is what would catch either half growing a
         cache again."""
-        from aledb_stats.util import get_experiment_summary
+        from mutint_stats.util import get_experiment_summary
 
         summary = get_experiment_summary(self.experiment.id)
         needle = get_needle_plot_data(self.experiment.id)
@@ -424,9 +424,9 @@ class PanelRegistrationTestCase(TestCase):
     """
 
     def test_the_panel_is_registered_against_this_app(self):
-        from aledb_common.panel_registry import get_overview_panels
+        from mutint_common.panel_registry import get_overview_panels
 
-        mine = [p for p in get_overview_panels() if p["app"] == "aledb_needle"]
+        mine = [p for p in get_overview_panels() if p["app"] == "mutint_needle"]
 
         self.assertEqual(1, len(mine), get_overview_panels())
         self.assertEqual("needle/panel.html", mine[0]["template"])

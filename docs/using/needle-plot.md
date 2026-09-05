@@ -48,6 +48,6 @@ it is known, and nothing else is available when it is not.
 
 ## Installing it
 
-This component contributes no page and no sidebar entry — it is a panel on a page aledb-core
+This component contributes no page and no sidebar entry — it is a panel on a page mutint-core
 owns, registered through `panel_registry`. Adding it as a submodule of an assembled project is
 all there is to it; a deployment without it simply has no such section on the Overview.

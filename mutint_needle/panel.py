@@ -1,12 +1,12 @@
 """What the Overview panel is handed.
 
 Separate from `util.py` so the derivation can be tested without a request and without the
-panel machinery -- the same split `aledb_filter` draws between the filter value and what
+panel machinery -- the same split `mutint_filter` draws between the filter value and what
 applies it, and for the same reason: `util` is two queries over core's models, and this is
 the one place that knows a panel is rendered from a URL.
 """
 
-from aledb_needle.util import get_needle_plot_data, needle_plot_axis
+from mutint_needle.util import get_needle_plot_data, needle_plot_axis
 
 
 def needle_panel_context(experiment, request):
@@ -19,7 +19,7 @@ def needle_panel_context(experiment, request):
     `population` is read back out only so the picker's links preserve an ALE the reader arrived
     with, through `get_population` rather than a second reading of the same parameter.
     """
-    from aledb_sample.views.common import get_population
+    from mutint_sample.views.common import get_population
 
     axis = needle_plot_axis(experiment.id, request.GET.get("contig"))
     return {

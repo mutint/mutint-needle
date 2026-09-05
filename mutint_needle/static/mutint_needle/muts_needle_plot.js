@@ -6,7 +6,7 @@
  * genome -- while the points it was given carried no sequence name, so a multi-contig
  * reference drew every contig on top of itself. Neither failed loudly: the plot rendered, it
  * was just not about this genome. The axis now comes from the reference, and the server sends
- * one sequence's points (aledb_needle/util.py `needle_plot_axis`), chosen by the reader from
+ * one sequence's points (mutint_needle/util.py `needle_plot_axis`), chosen by the reader from
  * the picker above the plot.
  */
 var NEEDLE_PLOT = NEEDLE_PLOT || (function () {
