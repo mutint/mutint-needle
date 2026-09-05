@@ -145,7 +145,7 @@ class NeedlePlotTestCase(TestCase):
     def test_it_reflects_a_new_call_immediately(self):
         """`StaticData` was rebuilt through the 'static_data' rebuilder, so a new call
         appeared only once something marked it stale. There is no such window now, and that
-        is the behaviour the rebuilder was traded for."""
+        is the behavior the rebuilder was traded for."""
         self._observe(self.first, self._mutation("SNP", 150, gene="thrA"))
         self.assertEqual(1, len(self._needles()))
 
@@ -191,7 +191,7 @@ class NeedlePlotAxisTestCase(TestCase):
         self.assertEqual([axis["contig"]], [e["id"] for e in axis["contigs"]])
 
     def test_the_data_is_scoped_to_that_contig(self):
-        """Two contigs' positions on one unlabelled axis is a plot of nothing."""
+        """Two contigs' positions on one unlabeled axis is a plot of nothing."""
         self.assertEqual([], get_needle_plot_data(self.experiment.id, contig="other"))
         self.assertTrue(get_needle_plot_data(
             self.experiment.id, contig=needle_plot_axis(self.experiment.id)["contig"]))

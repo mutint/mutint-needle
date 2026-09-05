@@ -30,7 +30,7 @@ def needle_plot_axis(experiment_id, contig=None):
 
     **Which one is the reader's to choose**, and that half was missing: one contig was
     hardcoded as the answer rather than as the default, so a plasmid's mutations were on no
-    page in the product. `contig` is what the reader asked for, and an unrecognised one falls
+    page in the product. `contig` is what the reader asked for, and an unrecognized one falls
     back to the default rather than drawing an empty plot -- the same posture
     `breseq_table._selected_reseq` takes with a sample id that its own filters exclude.
 

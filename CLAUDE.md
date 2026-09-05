@@ -64,7 +64,7 @@ Three more things:
 - **The picker is links, not a form**, the same shape as the per-sample page's sample picker,
   so it needs no script and a plasmid's plot is a URL somebody can send. Its `.aledb-picker`
   wrapper and `.aledb-menu` list are core's, in `common.css`.
-- **An unrecognised `?contig=` falls back to the default** rather than drawing an empty plot,
+- **An unrecognized `?contig=` falls back to the default** rather than drawing an empty plot,
   as `breseq_table._selected_reseq` does with a sample its own filters exclude. An empty plot
   of a contig that does not exist reads exactly like a contig with no mutations — and that
   second thing is a state the page renders on purpose.
@@ -98,7 +98,7 @@ stale. Neither is stored now and both read the same queryset, so they cannot.
 
 ## Two things it does not do
 
-- **It applies no view filter.** The Overview summarises what the experiment holds, the way the
+- **It applies no view filter.** The Overview summarizes what the experiment holds, the way the
   dashboard does, rather than being a table you read rows through. `{% view_filter_summary %}`
   is deliberately absent for the same reason.
 - **It subtracts the ancestor**, through `get_evolved_call_queryset`, like every other

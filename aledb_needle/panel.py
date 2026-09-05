@@ -13,7 +13,7 @@ def needle_panel_context(experiment, request):
     """The context `needle/panel.html` renders from.
 
     `?contig=` is the sequence picker's own parameter, in the URL rather than the session so a
-    plasmid's plot is a link somebody can send. An unrecognised value falls back to the
+    plasmid's plot is a link somebody can send. An unrecognized value falls back to the
     default, which is the reference's longest sequence -- see `needle_plot_axis`.
 
     `population` is read back out only so the picker's links preserve an ALE the reader arrived

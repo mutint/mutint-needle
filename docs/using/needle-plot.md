@@ -1,7 +1,7 @@
 # The needle plot
 
 One needle per mutation call, drawn along the axis of one of the reference's sequences and
-coloured by mutation type. It sits on an experiment's Overview page (`/stats`), under the
+colored by mutation type. It sits on an experiment's Overview page (`/stats`), under the
 counts and the sample table, and it is drawn from the mutations as they stand — there is
 nothing stored to keep current, so it cannot disagree with the tables beside it.
 
@@ -40,7 +40,7 @@ it is known, and nothing else is available when it is not.
 
 ## What it does not do
 
-- **It does not apply your view filter.** The Overview summarises what the experiment holds, in
+- **It does not apply your view filter.** The Overview summarizes what the experiment holds, in
   the way the dashboard does, rather than being a table you read rows through. The mutation
   tables are where filtering applies.
 - **It does subtract the ancestor**, like every other derivation: an ancestral mutation is in
