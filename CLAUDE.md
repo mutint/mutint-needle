@@ -2,9 +2,9 @@
 
 The mutation needle plot, as a panel on mutint-core's experiment Overview page.
 
-**The first plugin in the suite that is neither a page nor a model.** mutint-compare,
-mutint-fixation and mutint-converge each own a route and a sidebar entry; mutint-phylogeny owns
-those plus a stored table. This one registers a *panel* — a template and a callable that
+**The first plugin in the suite that is neither a page nor a model.** mutint-compare owns a
+route and a sidebar entry (and, since mutint-fixation and mutint-converge were folded into it,
+two row sets); mutint-phylogeny owns those plus a stored table. This one registers a *panel* — a template and a callable that
 builds its context — through `mutint_common.panel_registry`, and contributes no URL, no nav
 entry, no model and no migration. It is the first consumer of that registry, and the reason it
 exists: until then, something that was one panel rather than a page had no seam at all and had
