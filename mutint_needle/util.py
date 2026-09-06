@@ -32,7 +32,7 @@ def needle_plot_axis(experiment_id, contig=None):
     hardcoded as the answer rather than as the default, so a plasmid's mutations were on no
     page in the product. `contig` is what the reader asked for, and an unrecognized one falls
     back to the default rather than drawing an empty plot -- the same posture
-    `breseq_table._selected_reseq` takes with a sample id that its own filters exclude.
+    `breseq_table._selected_sample` takes with a sample id that its own filters exclude.
 
     Returns `{contig, length, contigs}`. `contigs` is every sequence the plot could draw,
     longest first, each carrying its own `count` and `length` -- the list the picker is built
