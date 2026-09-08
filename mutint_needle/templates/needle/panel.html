@@ -47,9 +47,9 @@
         <link type="text/css" rel="stylesheet" href="{% static "mutint_needle/muts-needle-plot/build/muts-needle-plot.css" %}">
         {% comment %} `?v=` on this component's own file only. Everything above carries its
            version in its path already, so a release cannot serve half of one and half of
-           another. `mutint_version` is mutint-core's, which is what versions this asset too:
+           another. `asset_version` is mutint-core's, which is what versions this asset too:
            the panel is rendered by core's page and ships no version of its own. {% endcomment %}
-        <script type="text/javascript" src="{% static "mutint_needle/muts_needle_plot.js" %}?v={{ mutint_version }}"></script>
+        <script type="text/javascript" src="{% static "mutint_needle/muts_needle_plot.js" %}?v={{ asset_version }}"></script>
         {{ needle_plot_data|json_script:"needle-plot-data" }}
         {{ needle_axis|json_script:"needle-plot-axis" }}
         <script type="text/javascript">
