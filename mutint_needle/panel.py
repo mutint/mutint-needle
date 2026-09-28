@@ -16,15 +16,17 @@ def needle_panel_context(experiment, request):
     plasmid's plot is a link somebody can send. An unrecognized value falls back to the
     default, which is the reference's longest sequence -- see `needle_plot_axis`.
 
-    `population` is read back out only so the picker's links preserve an ALE the reader arrived
-    with, through `get_population` rather than a second reading of the same parameter.
+    `population` and `treatment` are read back out only so the picker's links preserve a
+    narrowing the reader arrived with, through `get_population` and `get_treatment` rather
+    than a second reading of the same parameters. The plot itself is experiment-wide.
     """
-    from mutint_sample.views.common import get_population
+    from mutint_sample.views.common import get_population, get_treatment
 
     axis = needle_plot_axis(experiment.id, request.GET.get("contig"))
     return {
         "experiment_id": experiment.id,
         "population": get_population(request),
+        "treatment": get_treatment(request),
         "needle_axis": axis,
         # Handed to the page through `json_script`, not as a Python repr interpolated into a
         # JS literal -- which is what `mark_safe(list(...))` was, and which only worked

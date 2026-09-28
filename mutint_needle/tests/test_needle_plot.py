@@ -355,6 +355,19 @@ class ContigPickerTestCase(TestCase):
         # passed.
         self.assertIn("?%s=%s&amp;" % (REQUEST_EXPERIMENT_ID, self.experiment.id), body)
 
+    def test_the_picker_carries_the_treatment_the_reader_arrived_with(self):
+        """The plot is experiment-wide, and the links keep `?treatment=` for the same reason
+        they keep `?population=`: the rest of the page was narrowed by it."""
+        self.client.force_login(self.user)
+        self.experiment.project.user = self.user
+        self.experiment.project.save()
+        response = self.client.get(
+            "/stats?experiment_id=%s&treatment=glucose&population=1" % self.experiment.id,
+            follow=True)
+        body = response.content.decode()
+        self.assertIn("&amp;treatment=glucose&amp;contig=", body)
+        self.assertIn("&amp;population=1&amp;", body)
+
 
 class NothingIsStoredTestCase(TestCase):
     """The plot is computed by the request that draws it, and this is what says so.
