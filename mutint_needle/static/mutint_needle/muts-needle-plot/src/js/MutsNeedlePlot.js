@@ -222,7 +222,7 @@ function MutsNeedlePlot (config) {
 MutsNeedlePlot.prototype.drawLegend = function(svg) {
 
     // LEGEND
-    self = this;
+    var self = this;        // was a bare assignment, which leaked a global `self` (see VENDOR.md)
 
     // prepare legend categories (correct order)
     mutCategories = [];

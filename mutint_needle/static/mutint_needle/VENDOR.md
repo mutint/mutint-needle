@@ -5,7 +5,7 @@ same reason `igv.min.js` is vendored in mutint-core and phylotree in mutint-phyl
 
 | file | source | sha256 |
 |---|---|---|
-| `muts-needle-plot/build/muts-needle-plot.js` | npm `muts-needle-plot` | `57f77da9…` |
+| `muts-needle-plot/build/muts-needle-plot.js` | npm `muts-needle-plot` | `92edb206…` |
 | `muts-needle-plot/build/muts-needle-plot.css` | npm `muts-needle-plot` | `474ead23…` |
 | `muts-needle-plot/src/js/dependencies/d3.js` | npm `muts-needle-plot` | `48bc2f9e…` |
 | `muts-needle-plot/src/js/dependencies/underscore.js` | npm `muts-needle-plot` | `53596846…` |
@@ -22,6 +22,16 @@ upgrading this library is choosing a version for the first time.
 `d3.js` here is **3.5.1**, which the library was built against and which is not
 interchangeable with a modern d3. mutint-phylogeny bundles its own d3 7 inside
 `phylotree.min.js`, so the two never meet on a page; nothing else in the suite loads d3.
+
+**One line is patched, in the build and its source alike.** `MutsNeedlePlot.prototype.drawLegend`
+began `self = this;` with no `var`, which in sloppy mode assigns the plot to the **global**
+`self` -- `window.self`, which every page has and which library code uses as "the window". The
+next script to do so was the DataTables Buttons bundle that `base.html` loads after the page's
+content: its FileSaver shim takes `self` as the window, reads `self.document`, and threw
+`Cannot read properties of undefined (reading 'createElementNS')` on every page with a needle
+plot. The line is `var self = this;` now, as the library's other methods already have it, and
+the hash above is of the patched file. Upgrading the library must carry the patch, or check
+that upstream fixed it.
 
 Four files are vendored and not loaded: `src/js/MutsNeedlePlot.js` and
 `src/css/muts-needle-plot.css` are the sources of the two `build/` files, `d3.min.js` is the
